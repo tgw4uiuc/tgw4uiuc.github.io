@@ -1,6 +1,6 @@
 <html>
 <script src='https://d3js.org/d3.v5.min.js'></script>
-<style> circle {fill: green; stroke: black;} </style>
+<style> circle {fill: gray; stroke: black;} </style>
 <body onload='init()'>
 <svg width=600 height=600>
 </svg>
@@ -8,15 +8,15 @@
 async function init() {
 const data = await d3.csv('https://tgw4uiuc.github.io/cars2017.csv');
 //console.log(data)
-xs = d3.scaleLog().domain([5,150]).range([0,500]);
-ys = d3.scaleLog().domain([5,150]).range([500,0]);
+xs = d3.scaleLog().domain([8,150]).range([0,500]);
+ys = d3.scaleLog().domain([8,150]).range([500,0]);
 const yAxis = d3.axisLeft()
   .scale(ys)
-  .tickValues([5,10,20,50,100])
+  .tickValues([10,20,50,100])
   .tickFormat(d3.format("~s"));
 const xAxis = d3.axisBottom()
   .scale(xs)
-  .tickValues([5,10,20,50,100])
+  .tickValues([10,20,50,100])
   .tickFormat(d3.format("~s"));
 d3.select('svg')
   .append("g")
@@ -27,13 +27,42 @@ d3.select('svg')
     .append('circle')
        .attr('cx',function(d,i) {return xs(d.AverageCityMPG);})
        .attr('cy',function(d,i) {return ys(d.AverageHighwayMPG);})
-       .attr('r',function(d,i)  {return (parseInt(d.EngineCylinders)+2) ;});
+       .attr('r',6);
   d3.select("svg").append("g")
     .attr("transform","translate(50,50)")
     .call(yAxis) ;
   d3.select("svg").append("g")
     .attr("transform","translate(50,550)")
     .call(xAxis) ; 
+  d3.select("svg").append("text")
+      .attr("transform",
+            "translate(200,200)")
+   .attr("transform", "rotate(90)")
+//    .attr("y", -100)
+//   .attr("x", -100)
+      .style("text-anchor", "middle")
+      .text("Stuff")
+//      .selectAll("text")
+//    .attr("y", 100)
+//    .attr("x", 100)
+//    .attr("dy", ".35em")
+//    .attr("transform", "rotate(90)")
+//    .style("text-anchor", "start");
+
+// d3.select("svg").append("text")
+//     .attr("transform", "rotate(-90)")
+//    .attr("y", -100)
+//     .attr("x", -100)
+//     .attr("dy", "1em")
+//     .style("text-anchor", "middle")
+//     .text("Value"); 
+
+  // text label for the x axis
+  d3.select("svg").append("text")             
+      .attr("transform",
+            "translate(280,580)")
+      .style("text-anchor", "middle")
+      .text("Date");
 }
 </script>
 </body>
