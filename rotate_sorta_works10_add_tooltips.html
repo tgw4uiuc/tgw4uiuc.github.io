@@ -1,0 +1,153 @@
+<html>
+<script src='https://d3js.org/d3.v5.min.js'></script>
+<style> circle {fill: orange; stroke: black;}
+#tooltip {
+  opacity: 0;
+  position: absolute;
+  text-align: center;
+  width: 60px; height: 40px;
+  background: white;
+  border: 0px;
+}
+ </style>
+<body onload='init()'>
+<svg width=800 height=800>
+</svg>
+<div id = "tooltip"></div>
+<script>
+async function init() {
+const data = await d3.csv('https://tgw4uiuc.github.io/cars2017.csv');
+//console.log(data)
+xs = d3.scaleLog().domain([8,150]).range([0,700]);
+ys = d3.scaleLog().domain([8,150]).range([700,0]);
+
+var tooltip = d3.select("#tooltip");
+
+eTypes = ['start', 'gas', 'diesel', 'electric', 'all'] ;
+stateCounter = 0 ;
+engineType = eTypes[stateCounter] ;
+
+const yAxis = d3.axisLeft()
+  .scale(ys)
+  .tickValues([10,20,50,100])
+  .tickFormat(d3.format("~s"));
+const xAxis = d3.axisBottom()
+  .scale(xs)
+  .tickValues([10,20,50,100])
+  .tickFormat(d3.format("~s"));
+d3.select('svg')
+  .append("g")
+     .attr("transform","translate(50,50)")
+  .selectAll('circle')
+    .data(data)
+    .enter()
+    .append('circle')
+       .attr('cx',function(d,i) {return xs(d.AverageCityMPG);})
+       .attr('cy',function(d,i) {return ys(d.AverageHighwayMPG);})
+       .attr('r',10)
+       .style('fill',function(d,i) {return colorFill(d.Fuel, engineType);})
+       .on("mouseover",function(d,i) {
+          tooltip.style("opacity", function(d) {
+                    if (engineType == 'all'){return 1;}
+                    else {return 0;} ;
+              		})
+                 .style("left", (d3.event.pageX+20)+"px")
+                 .style("top", (d3.event.pageY)+"px")
+                 .html("Item #"+i);
+       })
+       .on("mouseout", function() {tooltip.style("opacity", 0) }) 
+
+// Make Y-Axis
+  d3.select("svg").append("g")
+    .attr("transform","translate(50,50)")
+    .call(yAxis) ;
+
+// Make Y-Axis Label
+  d3.select("svg").append("text")
+    .attr("x", 10)
+    .attr("y", 350)
+    .attr("transform", "rotate(90,10,350)")
+    .style("text-anchor", "middle")
+    .text("Avg. Highway MPG")
+
+
+// Make X-Axis
+  d3.select("svg").append("g")
+    .attr("transform","translate(50,750)")
+    .call(xAxis) ; 
+
+
+// Make X-Axis Label
+  d3.select("svg").append("text")             
+      .attr("transform",
+            "translate(380,780)")
+      .style("text-anchor", "middle")
+      .text("Avg. City MPG");
+}
+var changeColor = function(color){
+  d3.selectAll('circle')
+    .style("fill", color)
+}
+
+var colorFill = function(fuel, etype){
+  if(etype == 'start')
+    {return 'gray'}
+  else if (etype == 'gas')
+    { 
+      if(fuel == 'Gasoline')
+      {return 'blue' ;}
+      else
+      {return 'gray' ;}
+    }
+  else if (etype == 'diesel')
+    { 
+      if(fuel == 'Diesel')
+      {return 'yellow' ;}
+      else
+      {return 'gray' ;}
+    }
+  else if (etype == 'electric')
+    { 
+      if(fuel == 'Electricity')
+      {return 'lime' ;}
+      else
+      {return 'gray' ;}
+    }
+   else
+   {
+      if(fuel == 'Gasoline')
+        {return 'blue' ;}
+      else if(fuel == 'Diesel')
+        {return 'yellow' ;}
+      else if(fuel == 'Electricity')
+        {return 'lime' ;}
+      else
+        {return 'gray' ;}
+    }
+}
+
+var nextState = function() {
+//   currentEngine = eTypes.indexOf(engineType) ;
+   console.log(engineType) ;
+   if (stateCounter < 4) {
+   stateCounter = stateCounter + 1 ;
+   engineType = eTypes[stateCounter] ;
+   } 
+   updateState() ;
+}
+
+var updateState = function() {
+   d3.select('svg')
+     .selectAll('circle')
+        .style('fill',function(d,i) {return colorFill(d.Fuel, engineType);});
+}
+
+</script>
+<button type = "button" onClick="window.location.href=window.location.href">Restart</button>
+
+<button type = "button" onClick="nextState()">Next</button>
+
+
+
+</body>
+</html>
